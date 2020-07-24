@@ -62,11 +62,18 @@
                 this.socket.onclose = () => {
                     this.msgHistory.push(
                         {
-                            text: 'Сообщение с сервером нарушено, перезагрузите страницу!',
+                            text: 'Сообщение с сервером нарушено.',
                             created: new Date()
                         }
                     )
+                    this.init_sock()
                 }
+                this.msgHistory.push(
+                    {
+                        text: 'Вы вошли в Chat!',
+                        created: new Date()
+                    }
+                )
             },
             send_msg() {
                 if (this.username && /\S/.test(this.msgInput)) {
