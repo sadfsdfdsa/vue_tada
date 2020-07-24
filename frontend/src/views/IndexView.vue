@@ -55,6 +55,7 @@
         methods: {
             init_sock() {
                 this.socket = new WebSocket('ws://pm.tada.team/ws?name=' + encodeURIComponent(this.username));
+
                 this.socket.onmessage = (event) => {
                     this.msgHistory.push(JSON.parse(event.data))
                 }
@@ -85,12 +86,13 @@
                     this.msgInput = ''
                     return;
                 }
+
                 if (!this.username && /\S/.test(this.msgInput)) {
                     this.username = this.msgInput;
                     this.msgHistory = [];
                     this.init_sock()
                     this.msgInput = ''
-                } else {
+                } else if (!this.username) {
                     this.msgHistory.push(
                         {
                             text: 'Имя должно содержать символы.',
