@@ -7,9 +7,6 @@
             <!--            MESSAGES-->
             <b-row align-h="center" align-v="end">
                 <b-col sm="8" class="messageCol messageDisplay" ref='messageDisplay'>
-                    <b-row>
-                        <b-col class="text-center"><strong>Welcome to the Chat!</strong></b-col>
-                    </b-row>
                     <b-row v-for="(msg, index) in msgHistory" v-bind:key="index">
                         <b-col class="mt-1">
                             <user-message v-if="msg.name"
@@ -25,11 +22,11 @@
             <b-row align-h="center" class="fixed-bottom">
                 <b-col sm="6">
                     <b-input-group>
-                        <!--                        <b-form-input v-model="username" placeholder="Your name" disabled-->
-                        <!--                                      style="max-width: 105px"></b-form-input>-->
-                        <b-form-input v-model="msgInput" placeholder="Enter your message" ref="msgInput"></b-form-input>
+                        <b-form-input v-model="msgInput"
+                                      :placeholder="username ? 'Enter your message' : 'Enter your name'"
+                                      ref="msgInput"></b-form-input>
                         <b-input-group-append>
-                            <b-button variant="primary" @click="send_msg">Send</b-button>
+                            <b-button variant="primary" @click="send_msg">{{username ? 'Send' : 'Join'}}</b-button>
                         </b-input-group-append>
                     </b-input-group>
                 </b-col>
@@ -49,25 +46,33 @@
         data: () => ({
             msgHistory: [],
             msgInput: '',
-            username: 'test123',
+            username: null,
             socket: null
         }),
         methods: {
             init_sock() {
+                window.addEventListener('keypress', this.keypressHold)
+
+                this.$refs.msgInput.$el.focus();
+
                 this.socket = new WebSocket('ws://pm.tada.team/ws?name=' + this.username);
                 this.socket.onmessage = (event) => {
                     this.msgHistory.push(JSON.parse(event.data))
                 }
             },
             send_msg() {
-                if (this.msgInput) {
+                if (this.username) {
                     this.socket.send(JSON.stringify({
                         text: this.msgInput,
                         created: new Date()
                     }))
-                    this.msgInput = ''
                     this.$refs.msgInput.$el.focus();
+                } else {
+                    this.username = this.msgInput;
+                    this.init_sock()
                 }
+                this.msgInput = ''
+
             },
             scroll_to_bottom() {
                 let messageDisplay = this.$refs.messageDisplay;
@@ -77,19 +82,12 @@
                 if (event.code === 'Enter') {
                     this.send_msg()
                 }
-            }
+            },
         },
         watch: {
             msgHistory: function () {
                 setInterval(this.scroll_to_bottom, 1000);
             }
-        },
-        mounted() {
-            this.init_sock();
-
-            window.addEventListener('keypress', this.keypressHold)
-
-            this.$refs.msgInput.$el.focus();
         },
         destroyed() {
             window.removeEventListener('keypress', this.keypressHold)
