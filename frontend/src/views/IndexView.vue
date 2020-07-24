@@ -7,6 +7,9 @@
             <!--            MESSAGES-->
             <b-row align-h="center" align-v="end">
                 <b-col sm="8" class="messageCol messageDisplay" ref='messageDisplay'>
+                    <b-row v-if="!username">
+                        <b-col class="text-center"><strong>Enter your name please</strong></b-col>
+                    </b-row>
                     <b-row v-for="(msg, index) in msgHistory" v-bind:key="index">
                         <b-col class="mt-1">
                             <user-message v-if="msg.name"
