@@ -1,33 +1,26 @@
-import Vue from 'vue'
+import BootstrapVue from "bootstrap-vue";
 import VueRouter from "vue-router";
+import Vue from 'vue'
 
-import routes from "@/routes";
-import store from "@/store";
-import "@/utils/libs";
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-import api_requests from "@/utils/api_requests";
+import routes from "./routes.js";
+import App from "./App.vue";
 
-// main template page
-import App from './App.vue'
-
-// using
+Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 
-// configuring
-Vue.config.productionTip = false;
-Vue.prototype.$api = api_requests;
-
+Vue.prototype.$axios = require('axios');
 
 const router = new VueRouter({
-    routes: routes,
+    routes,
     mode: "history",
     scrollBehavior: () => ({y: 0})
 });
 
-// init app
 new Vue({
     el: "#app",
     router,
-    store,
     render: f => f(App)
 });

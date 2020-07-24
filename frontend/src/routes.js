@@ -1,9 +1,10 @@
-import IndexPage from "@/views/IndexPage";
+import IndexView from "./views/IndexView";
+
 
 const routes = [
     {
         path: "/",
-        component: IndexPage,
+        component: IndexView,
         name: "indexPage",
         meta: {}
     },
