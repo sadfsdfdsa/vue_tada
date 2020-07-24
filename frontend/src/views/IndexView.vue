@@ -54,10 +54,6 @@
         }),
         methods: {
             init_sock() {
-                window.addEventListener('keypress', this.keypressHold)
-
-                this.$refs.msgInput.$el.focus();
-
                 this.socket = new WebSocket('ws://pm.tada.team/ws?name=' + encodeURIComponent(this.username));
                 this.socket.onmessage = (event) => {
                     this.msgHistory.push(JSON.parse(event.data))
@@ -86,7 +82,6 @@
                     this.msgInput = ''
                 }
             },
-
             scroll_to_bottom() {
                 let messageDisplay = this.$refs.messageDisplay;
                 messageDisplay.scrollTop = messageDisplay.scrollHeight;
@@ -96,6 +91,10 @@
                     this.send_msg()
                 }
             },
+        },
+        mounted() {
+            window.addEventListener('keypress', this.keypressHold)
+            this.$refs.msgInput.$el.focus();
         },
         watch: {
             msgHistory: function () {
