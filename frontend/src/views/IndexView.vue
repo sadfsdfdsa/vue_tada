@@ -58,9 +58,18 @@
 
                 this.$refs.msgInput.$el.focus();
 
-                this.socket = new WebSocket('ws://pm.tada.team/ws?name=' + this.username);
+                this.socket = new WebSocket('ws://pm.tada.team/ws?name=' + encodeURIComponent(this.username));
                 this.socket.onmessage = (event) => {
                     this.msgHistory.push(JSON.parse(event.data))
+                }
+
+                this.socket.onclose = () => {
+                    this.msgHistory.push(
+                        {
+                            text: 'Сообщение с сервером нарушено, перезагрузите страницу!',
+                            created: new Date()
+                        }
+                    )
                 }
             },
             send_msg() {
@@ -70,13 +79,14 @@
                         created: new Date()
                     }))
                     this.$refs.msgInput.$el.focus();
+                    this.msgInput = ''
                 } else {
                     this.username = this.msgInput;
                     this.init_sock()
+                    this.msgInput = ''
                 }
-                this.msgInput = ''
-
             },
+
             scroll_to_bottom() {
                 let messageDisplay = this.$refs.messageDisplay;
                 messageDisplay.scrollTop = messageDisplay.scrollHeight;
@@ -89,7 +99,7 @@
         },
         watch: {
             msgHistory: function () {
-                setInterval(this.scroll_to_bottom, 1000);
+                setTimeout(this.scroll_to_bottom, 300);
             }
         },
         destroyed() {
