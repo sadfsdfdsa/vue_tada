@@ -69,17 +69,27 @@
                 }
             },
             send_msg() {
-                if (this.username) {
+                if (this.username && /\S/.test(this.msgInput)) {
                     this.socket.send(JSON.stringify({
                         text: this.msgInput,
                         created: new Date()
                     }))
                     this.$refs.msgInput.$el.focus();
                     this.msgInput = ''
-                } else {
+                    return;
+                }
+                if (!this.username && /\S/.test(this.msgInput)) {
                     this.username = this.msgInput;
+                    this.msgHistory = [];
                     this.init_sock()
                     this.msgInput = ''
+                } else {
+                    this.msgHistory.push(
+                        {
+                            text: 'Имя должно содержать символы.',
+                            created: new Date()
+                        }
+                    )
                 }
             },
             scroll_to_bottom() {
