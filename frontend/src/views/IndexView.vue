@@ -54,12 +54,15 @@
         }),
         methods: {
             init_sock() {
+                // init socket
                 this.socket = new WebSocket('ws://pm.tada.team/ws?name=' + encodeURIComponent(this.username));
 
+                // on message
                 this.socket.onmessage = (event) => {
                     this.msgHistory.push(JSON.parse(event.data))
                 }
 
+                // on close try to new connect
                 this.socket.onclose = () => {
                     this.msgHistory.push(
                         {
@@ -69,6 +72,7 @@
                     )
                     this.init_sock()
                 }
+
                 this.msgHistory.push(
                     {
                         text: 'Вы вошли в Chat!',
@@ -77,6 +81,7 @@
                 )
             },
             send_msg() {
+                // send message
                 if (this.username && /\S/.test(this.msgInput)) {
                     this.socket.send(JSON.stringify({
                         text: this.msgInput,
@@ -87,6 +92,7 @@
                     return;
                 }
 
+                // set and validate username
                 if (!this.username && /\S/.test(this.msgInput)) {
                     this.username = this.msgInput;
                     this.msgHistory = [];
@@ -117,6 +123,7 @@
         },
         watch: {
             msgHistory: function () {
+                // timout for waiting rerender
                 setTimeout(this.scroll_to_bottom, 300);
             }
         },
